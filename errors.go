@@ -1,4 +1,4 @@
-package KVGo
+package kvgo
 
 import "errors"
 

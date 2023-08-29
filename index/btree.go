@@ -1,21 +1,21 @@
 package index
 
 import (
-	"KVGo/data"
 	"github.com/google/btree"
+	"kvgo/data"
 	"sync"
 )
 
-// BTree 封装了 google 的 btree库
+// BTree 索引，主要封装了 google 的 btree 库
 // https://github.com/google/btree
 type BTree struct {
 	tree *btree.BTree
 	lock *sync.RWMutex
 }
 
-func NewBtree() *BTree {
+// NewBTree 新建 BTree 索引结构
+func NewBTree() *BTree {
 	return &BTree{
-		// param: 控制叶子节点数量
 		tree: btree.New(32),
 		lock: new(sync.RWMutex),
 	}
@@ -24,8 +24,8 @@ func NewBtree() *BTree {
 func (bt *BTree) Put(key []byte, pos *data.LogRecordPos) bool {
 	it := &Item{key: key, pos: pos}
 	bt.lock.Lock()
-	defer bt.lock.Unlock()
 	bt.tree.ReplaceOrInsert(it)
+	bt.lock.Unlock()
 	return true
 }
 
@@ -41,8 +41,8 @@ func (bt *BTree) Get(key []byte) *data.LogRecordPos {
 func (bt *BTree) Delete(key []byte) bool {
 	it := &Item{key: key}
 	bt.lock.Lock()
-	defer bt.lock.Unlock()
 	oldItem := bt.tree.Delete(it)
+	bt.lock.Unlock()
 	if oldItem == nil {
 		return false
 	}

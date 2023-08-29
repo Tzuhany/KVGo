@@ -1,11 +1,11 @@
 package data
 
 import (
-	"KVGo/fio"
 	"errors"
 	"fmt"
 	"hash/crc32"
 	"io"
+	"kvgo/fio"
 	"path/filepath"
 )
 
@@ -15,14 +15,14 @@ var (
 
 const DataFileNameSuffix = ".data"
 
-// DataFile 数据文件抽象
+// DataFile 数据文件
 type DataFile struct {
-	FileId    uint32        // 文件 id
-	WriteOff  int64         // 文件写到了那个位置, 文件偏移
-	IoManager fio.IOManager // 数据读写接口
+	FileId    uint32        // 文件id
+	WriteOff  int64         // 文件写到了哪个位置
+	IoManager fio.IOManager // io 读写管理
 }
 
-// OpenDataFile 打开数据文件
+// OpenDataFile 打开新的数据文件
 func OpenDataFile(dirPath string, fileId uint32) (*DataFile, error) {
 	fileName := filepath.Join(dirPath, fmt.Sprintf("%09d", fileId)+DataFileNameSuffix)
 	// 初始化 IOManager 管理器接口
@@ -37,14 +37,14 @@ func OpenDataFile(dirPath string, fileId uint32) (*DataFile, error) {
 	}, nil
 }
 
-// ReadLogRecord 根据 offset 从数据文件读取记录
+// ReadLogRecord 根据 offset 从数据文件中读取 LogRecord
 func (df *DataFile) ReadLogRecord(offset int64) (*LogRecord, int64, error) {
 	fileSize, err := df.IoManager.Size()
 	if err != nil {
 		return nil, 0, err
 	}
 
-	// 如果读取的最大 header 长度已经超过了文件长度, 只读取到文件末尾
+	// 如果读取的最大 header 长度已经超过了文件的长度，则只需要读取到文件的末尾即可
 	var headerBytes int64 = maxLogRecordHeaderSize
 	if offset+maxLogRecordHeaderSize > fileSize {
 		headerBytes = fileSize - offset
@@ -57,8 +57,7 @@ func (df *DataFile) ReadLogRecord(offset int64) (*LogRecord, int64, error) {
 	}
 
 	header, headerSize := decodeLogRecordHeader(headerBuf)
-
-	// 读取到了文件末尾
+	// 下面的两个条件表示读取到了文件末尾，直接返回 EOF 错误
 	if header == nil {
 		return nil, 0, io.EOF
 	}
@@ -66,7 +65,7 @@ func (df *DataFile) ReadLogRecord(offset int64) (*LogRecord, int64, error) {
 		return nil, 0, io.EOF
 	}
 
-	// 取出对应 key 和 value 的长度
+	// 取出对应的 key 和 value 的长度
 	keySize, valueSize := int64(header.keySize), int64(header.valueSize)
 	var recordSize = headerSize + keySize + valueSize
 
@@ -77,13 +76,12 @@ func (df *DataFile) ReadLogRecord(offset int64) (*LogRecord, int64, error) {
 		if err != nil {
 			return nil, 0, err
 		}
-
-		// 解除 key 和 value
+		//	解出 key 和 value
 		logRecord.Key = kvBuf[:keySize]
 		logRecord.Value = kvBuf[keySize:]
 	}
 
-	// 校验 crc 有效性
+	// 校验数据的有效性
 	crc := getLogRecordCRC(logRecord, headerBuf[crc32.Size:headerSize])
 	if crc != header.crc {
 		return nil, 0, ErrInvalidCRC

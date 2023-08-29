@@ -9,7 +9,11 @@ type FileIO struct {
 
 // NewFileIOManager 初始化标准文件 IO
 func NewFileIOManager(fileName string) (*FileIO, error) {
-	fd, err := os.OpenFile(fileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, DataFilePerm)
+	fd, err := os.OpenFile(
+		fileName,
+		os.O_CREATE|os.O_RDWR|os.O_APPEND,
+		DataFilePerm,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +29,7 @@ func (fio *FileIO) Write(b []byte) (int, error) {
 }
 
 func (fio *FileIO) Sync() error {
-	return fio.fd.Close()
+	return fio.fd.Sync()
 }
 
 func (fio *FileIO) Close() error {

@@ -1,10 +1,10 @@
-module KVGo
+module kvgo
 
-go 1.20
+go 1.19
 
 require (
 	github.com/google/btree v1.1.2
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.8.2
 )
 
 require (

@@ -13,7 +13,16 @@ func destroyFile(name string) {
 	}
 }
 
-func TestFileIO_Close(t *testing.T) {
+func TestNewFileIOManager(t *testing.T) {
+	path := filepath.Join("/tmp", "a.data")
+	fio, err := NewFileIOManager(path)
+	defer destroyFile(path)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, fio)
+}
+
+func TestFileIO_Write(t *testing.T) {
 	path := filepath.Join("/tmp", "a.data")
 	fio, err := NewFileIOManager(path)
 	defer destroyFile(path)
@@ -21,7 +30,16 @@ func TestFileIO_Close(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, fio)
 
-	err = fio.Close()
+	n, err := fio.Write([]byte(""))
+	assert.Equal(t, 0, n)
+	assert.Nil(t, err)
+
+	n, err = fio.Write([]byte("kv-go"))
+	assert.Equal(t, 10, n)
+	assert.Nil(t, err)
+
+	n, err = fio.Write([]byte("storage"))
+	assert.Equal(t, 7, n)
 	assert.Nil(t, err)
 }
 
@@ -62,7 +80,7 @@ func TestFileIO_Sync(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestFileIO_Write(t *testing.T) {
+func TestFileIO_Close(t *testing.T) {
 	path := filepath.Join("/tmp", "a.data")
 	fio, err := NewFileIOManager(path)
 	defer destroyFile(path)
@@ -70,24 +88,6 @@ func TestFileIO_Write(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, fio)
 
-	n, err := fio.Write([]byte(""))
-	assert.Equal(t, 0, n)
+	err = fio.Close()
 	assert.Nil(t, err)
-
-	n, err = fio.Write([]byte("bitCask kv"))
-	assert.Equal(t, 10, n)
-	assert.Nil(t, err)
-
-	n, err = fio.Write([]byte("storage"))
-	assert.Equal(t, 7, n)
-	assert.Nil(t, err)
-}
-
-func TestNewFileIOManager(t *testing.T) {
-	path := filepath.Join("/tmp", "a.data")
-	fio, err := NewFileIOManager(path)
-	defer destroyFile(path)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, fio)
 }

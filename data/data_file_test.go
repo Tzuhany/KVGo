@@ -21,40 +21,40 @@ func TestOpenDataFile(t *testing.T) {
 }
 
 func TestDataFile_Write(t *testing.T) {
-	dataFile1, err := OpenDataFile(os.TempDir(), 0)
+	dataFile, err := OpenDataFile(os.TempDir(), 0)
 	assert.Nil(t, err)
-	assert.NotNil(t, dataFile1)
+	assert.NotNil(t, dataFile)
 
-	err = dataFile1.Write([]byte("aaa"))
-	assert.Nil(t, err)
-
-	err = dataFile1.Write([]byte("bbb"))
+	err = dataFile.Write([]byte("aaa"))
 	assert.Nil(t, err)
 
-	err = dataFile1.Write([]byte("ccc"))
+	err = dataFile.Write([]byte("bbb"))
+	assert.Nil(t, err)
+
+	err = dataFile.Write([]byte("ccc"))
 	assert.Nil(t, err)
 }
 
 func TestDataFile_Close(t *testing.T) {
-	dataFile1, err := OpenDataFile(os.TempDir(), 123)
+	dataFile, err := OpenDataFile(os.TempDir(), 123)
 	assert.Nil(t, err)
-	assert.NotNil(t, dataFile1)
+	assert.NotNil(t, dataFile)
 
-	err = dataFile1.Write([]byte("aaa"))
+	err = dataFile.Write([]byte("aaa"))
 	assert.Nil(t, err)
 
-	err = dataFile1.Close()
+	err = dataFile.Close()
 	assert.Nil(t, err)
 }
 
 func TestDataFile_Sync(t *testing.T) {
-	dataFile1, err := OpenDataFile(os.TempDir(), 456)
+	dataFile, err := OpenDataFile(os.TempDir(), 456)
 	assert.Nil(t, err)
-	assert.NotNil(t, dataFile1)
+	assert.NotNil(t, dataFile)
 
-	err = dataFile1.Write([]byte("aaa"))
+	err = dataFile.Write([]byte("aaa"))
 	assert.Nil(t, err)
 
-	err = dataFile1.Sync()
+	err = dataFile.Sync()
 	assert.Nil(t, err)
 }
