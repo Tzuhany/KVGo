@@ -44,7 +44,7 @@ func (df *DataFile) ReadLogRecord(offset int64) (*LogRecord, int64, error) {
 		return nil, 0, err
 	}
 
-	// 如果读取的最大 header 长度已经超过了文件的长度，则只需要读取到文件的末尾即可
+	// 如果读取的最大 header 长度已经超过了文件的长度, 则只需要读取到文件的末尾即可
 	var headerBytes int64 = maxLogRecordHeaderSize
 	if offset+maxLogRecordHeaderSize > fileSize {
 		headerBytes = fileSize - offset
@@ -57,7 +57,7 @@ func (df *DataFile) ReadLogRecord(offset int64) (*LogRecord, int64, error) {
 	}
 
 	header, headerSize := decodeLogRecordHeader(headerBuf)
-	// 下面的两个条件表示读取到了文件末尾，直接返回 EOF 错误
+	// 下面的两个条件表示读取到了文件末尾, 直接返回 EOF 错误
 	if header == nil {
 		return nil, 0, io.EOF
 	}
@@ -70,7 +70,7 @@ func (df *DataFile) ReadLogRecord(offset int64) (*LogRecord, int64, error) {
 	var recordSize = headerSize + keySize + valueSize
 
 	logRecord := &LogRecord{Type: header.recordType}
-	// 开始读取用户实际存储的 key/value 数据
+	// 开始读取用户实际存储的 key value 数据
 	if keySize > 0 || valueSize > 0 {
 		kvBuf, err := df.readNBytes(keySize+valueSize, offset+headerSize)
 		if err != nil {

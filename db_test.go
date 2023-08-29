@@ -10,7 +10,7 @@ import (
 // 测试完成之后销毁 DB 数据目录
 func destroyDB(db *DB) {
 	if db != nil {
-		_ = db.activeFile.Close() // todo 实现了 Close 方法之后, 这里使用 Close 方法替代
+		_ = db.activeFile.Close()
 		err := os.RemoveAll(db.options.DirPath)
 		if err != nil {
 			panic(err)

@@ -6,7 +6,7 @@ import (
 	"kvgo/data"
 )
 
-// Indexer 抽象索引接口，后续如果想要接入其他的数据结构，则直接实现这个接口即可
+// Indexer 抽象索引接口, 后续如果想要接入其他的数据结构, 则直接实现这个接口即可
 type Indexer interface {
 	// Put 向索引中存储 key 对应的数据位置信息
 	Put(key []byte, pos *data.LogRecordPos) bool

@@ -16,27 +16,27 @@ import (
 type DB struct {
 	options    Options
 	mu         *sync.RWMutex
-	fileIds    []int                     // 文件 id, 只能在加载索引的时候使用, 不能在其他的地方更新和使用
-	activeFile *data.DataFile            // 当前活跃数据文件, 可以用于写入
-	olderFiles map[uint32]*data.DataFile // 旧的数据文件, 只能用于读
+	fileIds    []int                     // 文件 id, 仅在在加载索引的时候使用
+	activeFile *data.DataFile            // 当前活跃数据文件
+	olderFiles map[uint32]*data.DataFile // 旧的数据文件
 	index      index.Indexer             // 内存索引
 }
 
 // Open 打开存储引擎实例
 func Open(options Options) (*DB, error) {
-	// 对用户传入的配置项进行校验
+	// 校验配置项
 	if err := checkOptions(options); err != nil {
 		return nil, err
 	}
 
-	// 判断数据目录是否存在, 如果不存在的话, 则创建这个目录
+	// 判断数据目录是否存在, 如果不存在则创建该目录
 	if _, err := os.Stat(options.DirPath); os.IsNotExist(err) {
 		if err := os.MkdirAll(options.DirPath, os.ModePerm); err != nil {
 			return nil, err
 		}
 	}
 
-	// 初始化 DB 实例结构体
+	// 初始化 DB 实例
 	db := &DB{
 		options:    options,
 		mu:         new(sync.RWMutex),
@@ -57,21 +57,21 @@ func Open(options Options) (*DB, error) {
 	return db, nil
 }
 
-// Put 写入 Key/Value 数据, key 不能为空
+// Put 写入 key value 数据, key 不为空
 func (db *DB) Put(key []byte, value []byte) error {
 	// 判断 key 是否有效
 	if len(key) == 0 {
 		return ErrKeyIsEmpty
 	}
 
-	// 构造 LogRecord 结构体
+	// 构造 LogRecord
 	logRecord := &data.LogRecord{
 		Key:   key,
 		Value: value,
 		Type:  data.LogRecordNormal,
 	}
 
-	// 追加写入到当前活跃数据文件当中
+	// 追加写入到当前活跃数据文件
 	pos, err := db.appendLogRecord(logRecord)
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (db *DB) Delete(key []byte) error {
 		return ErrKeyIsEmpty
 	}
 
-	// 先检查 key 是否存在, 如果不存在的话直接返回
+	// 先检查 key 是否存在, 如果不存在的直接返回
 	if pos := db.index.Get(key); pos == nil {
 		return nil
 	}
@@ -160,7 +160,7 @@ func (db *DB) appendLogRecord(logRecord *data.LogRecord) (*data.LogRecordPos, er
 	db.mu.Lock()
 	defer db.mu.Unlock()
 
-	// 判断当前活跃数据文件是否存在, 因为数据库在没有写入的时候是没有文件生成的
+	// 判断当前活跃数据文件是否存在, 数据库初始时无文件生成
 	// 如果为空则初始化数据文件
 	if db.activeFile == nil {
 		if err := db.setActiveDataFile(); err != nil {
