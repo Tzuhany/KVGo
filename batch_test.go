@@ -48,67 +48,42 @@ func TestDB_WriteBatch(t *testing.T) {
 
 func TestDB_WriteBatch2(t *testing.T) {
 	opts := DefaultOptions
-	//dir, _ := os.MkdirTemp("", "kvgo-wb")
-	dir := "/tmp/batch-test-1"
+	dir, _ := os.MkdirTemp("", "kvgo-batch-2")
 	opts.DirPath = dir
 	db, err := Open(opts)
-	//defer destroyDB(db)
+	defer destroyDB(db)
 	assert.Nil(t, err)
 	assert.NotNil(t, db)
 
-	//// 数据不存在
+	err = db.Put(utils.GetTestKey(1), utils.RandomValue(10))
+	assert.Nil(t, err)
+
 	wb := db.NewWriteBatch(DefaultWriteBatchOptions)
-	//wb.Put(utils.GetTestKey(12), utils.RandomValue(10))
-	//wb.Delete(utils.GetTestKey(12))
-	//err = wb.Commit()
-	//t.Log(err)
-	//
-	//	数据存在
-	err = db.Put(utils.GetTestKey(12), utils.RandomValue(10))
+	err = wb.Put(utils.GetTestKey(2), utils.RandomValue(10))
 	assert.Nil(t, err)
-	_ = wb.Delete(utils.GetTestKey(12))
+	err = wb.Delete(utils.GetTestKey(1))
+	assert.Nil(t, err)
+
 	err = wb.Commit()
-	t.Log(err)
-
-	err = db.Put(utils.GetTestKey(12), utils.RandomValue(10))
-	val, err := db.Get(utils.GetTestKey(12))
-	t.Log(string(val))
-	t.Log(err)
-
-	t.Log(db.seqNo)
-}
-
-func TestDB_WriteBatch3(t *testing.T) {
-	opts := DefaultOptions
-	//dir, _ := os.MkdirTemp("", "kvgo-wb")
-	dir := "/tmp/batch-test-1"
-	opts.DirPath = dir
-	db, err := Open(opts)
-	//defer destroyDB(db)
 	assert.Nil(t, err)
-	assert.NotNil(t, db)
 
-	////	提交之后再提交
-	//wb := db.NewWriteBatch(DefaultWriteBatchOptions)
-	//err = wb.Put(utils.GetTestKey(11), utils.RandomValue(12))
-	//assert.Nil(t, err)
-	//err = wb.Put(utils.GetTestKey(12), utils.RandomValue(12))
-	//assert.Nil(t, err)
-	//err = wb.Put(utils.GetTestKey(13), utils.RandomValue(12))
-	//assert.Nil(t, err)
-	//
-	//err = wb.Commit()
-	//t.Log(err)
-	//
-	//err = wb.Put(utils.GetTestKey(14), utils.RandomValue(12))
-	//assert.Nil(t, err)
-	//err = wb.Commit()
-	//t.Log(err)
+	err = wb.Put(utils.GetTestKey(11), utils.RandomValue(10))
+	assert.Nil(t, err)
+	err = wb.Commit()
+	assert.Nil(t, err)
 
-	keys := db.ListKeys()
-	for _, k := range keys {
-		t.Log(string(k))
-	}
+	// 重启
+	err = db.Close()
+	assert.Nil(t, err)
+
+	db2, err := Open(opts)
+	assert.Nil(t, err)
+
+	_, err = db2.Get(utils.GetTestKey(1))
+	assert.Equal(t, ErrKeyNotFound, err)
+
+	// 校验序列号
+	assert.Equal(t, uint64(2), db.seqNo)
 }
 
 func TestDB_WriteBatch4(t *testing.T) {
