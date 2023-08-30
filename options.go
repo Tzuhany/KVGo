@@ -41,13 +41,16 @@ const (
 
 	// ART 自适应基数树索引
 	ART
+
+	// BPlusTree B+树 索引
+	BPlusTree
 )
 
 var DefaultOptions = Options{
 	DirPath:      os.TempDir(),
 	DataFileSize: 256 * 1024 * 1024, // 256MB
 	SyncWrites:   false,
-	IndexType:    BTree,
+	IndexType:    BPlusTree,
 }
 
 var DefaultIteratorOptions = IteratorOptions{

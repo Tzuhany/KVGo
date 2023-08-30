@@ -153,7 +153,7 @@ func TestDB_Get(t *testing.T) {
 	assert.NotNil(t, val7)
 	assert.Equal(t, val3, val7)
 
-	val8, err := db.Get(utils.GetTestKey(33))
+	val8, err := db2.Get(utils.GetTestKey(33))
 	assert.Equal(t, 0, len(val8))
 	assert.Equal(t, ErrKeyNotFound, err)
 }
@@ -214,6 +214,7 @@ func TestDB_ListKeys(t *testing.T) {
 	opts := DefaultOptions
 	dir, _ := os.MkdirTemp("", "kvgo-list-keys")
 	opts.DirPath = dir
+	opts.DataFileSize = 64 * 1024 * 1024
 	db, err := Open(opts)
 	defer destroyDB(db)
 	assert.Nil(t, err)
@@ -223,8 +224,8 @@ func TestDB_ListKeys(t *testing.T) {
 	keys1 := db.ListKeys()
 	assert.Equal(t, 0, len(keys1))
 
-	// 只有一条数据
-	err = db.Put(utils.GetTestKey(11), utils.RandomValue(20))
+	//只有一条数据
+	err = db.Put(utils.GetTestKey(22), utils.RandomValue(128))
 	assert.Nil(t, err)
 	keys2 := db.ListKeys()
 	assert.Equal(t, 1, len(keys2))
@@ -238,7 +239,7 @@ func TestDB_ListKeys(t *testing.T) {
 	assert.Nil(t, err)
 
 	keys3 := db.ListKeys()
-	assert.Equal(t, 4, len(keys3))
+	assert.Equal(t, 3, len(keys3))
 	for _, k := range keys3 {
 		assert.NotNil(t, k)
 	}
