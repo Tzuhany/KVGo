@@ -39,7 +39,7 @@ const (
 	// BTree 索引
 	BTree IndexerType = iota + 1
 
-	// ART Adpative Radix Tree 自适应基数树索引
+	// ART 自适应基数树索引
 	ART
 )
 
@@ -53,4 +53,9 @@ var DefaultOptions = Options{
 var DefaultIteratorOptions = IteratorOptions{
 	Prefix:  nil,
 	Reverse: false,
+}
+
+var DefaultWriteBatchOptions = WriteBatchOptions{
+	MaxBatchNum: 10000,
+	SyncWrites:  true,
 }
