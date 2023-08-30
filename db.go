@@ -18,8 +18,8 @@ type DB struct {
 	options    Options
 	mu         *sync.RWMutex
 	fileIds    []int                     // 文件 id, 只能在加载索引的时候使用, 不能在其他的地方更新和使用
-	activeFile *data.DataFile            // 当前活跃数据文件, 可以用于写入
-	olderFiles map[uint32]*data.DataFile // 旧的数据文件, 只能用于读
+	activeFile *data.DataFile            // 当前活跃数据文件, 用于写入
+	olderFiles map[uint32]*data.DataFile // 旧的数据文件, 用于读
 	index      index.Indexer             // 内存索引
 	seqNo      uint64                    // 事务序列号, 全局递增 atomic
 	isMerging  bool                      // 是否有 merge 正在进行
@@ -347,7 +347,7 @@ func (db *DB) loadDataFiles() error {
 
 // 从数据文件中加载索引, 遍历文件中的所有记录, 并更新到内存索引中
 func (db *DB) loadIndexFromDataFiles() error {
-	// 没有文件，说明数据库是空的，直接返回
+	// 没有文件, 说明数据库是空的, 直接返回
 	if len(db.fileIds) == 0 {
 		return nil
 	}
@@ -380,7 +380,7 @@ func (db *DB) loadIndexFromDataFiles() error {
 	var currentSeqNo = nonTransactionSeqNo
 	transactionRecords := make(map[uint64][]*data.TransactionRecord)
 
-	// 遍历所有的文件id，处理文件中的记录
+	// 遍历所有的文件id, 处理文件中的记录
 	for i, fid := range db.fileIds {
 		var fileId = uint32(fid)
 		// 已经 merge 过了, 直接在 hint 中取
@@ -433,11 +433,11 @@ func (db *DB) loadIndexFromDataFiles() error {
 				currentSeqNo = seqNo
 			}
 
-			// 递增 offset，下一次从新的位置开始读取
+			// 递增 offset, 下一次从新的位置开始读取
 			offset += size
 		}
 
-		// 如果是当前活跃文件，更新这个文件的 WriteOff
+		// 如果是当前活跃文件, 更新这个文件的 WriteOff
 		if i == len(db.fileIds)-1 {
 			db.activeFile.WriteOff = offset
 		}
