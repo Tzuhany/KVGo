@@ -9,11 +9,17 @@ type Options struct {
 	// 数据文件的大小
 	DataFileSize int64
 
+	// 累计写入多少字节后进行持久化
+	BytesPerSync int
+
 	// 每次写数据是否持久化
 	SyncWrites bool
 
 	// 索引类型
 	IndexType IndexerType
+
+	// 是否需要在启动时, 使用 mmap 加载
+	MMapAtStartup bool
 }
 
 // IteratorOptions 索引迭代器配置项
@@ -47,10 +53,12 @@ const (
 )
 
 var DefaultOptions = Options{
-	DirPath:      os.TempDir(),
-	DataFileSize: 256 * 1024 * 1024, // 256MB
-	SyncWrites:   false,
-	IndexType:    BPlusTree,
+	DirPath:       os.TempDir(),
+	DataFileSize:  256 * 1024 * 1024, // 256MB
+	SyncWrites:    false,
+	BytesPerSync:  0,
+	IndexType:     ART,
+	MMapAtStartup: true,
 }
 
 var DefaultIteratorOptions = IteratorOptions{
