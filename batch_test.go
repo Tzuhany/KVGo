@@ -92,17 +92,9 @@ func TestDB_WriteBatch4(t *testing.T) {
 	dir := "/tmp/batch-test-3"
 	opts.DirPath = dir
 	db, err := Open(opts)
-	//defer destroyDB(db)
+	defer destroyDB(db)
 	assert.Nil(t, err)
 	assert.NotNil(t, db)
-
-	//wb := db.NewWriteBatch(DefaultWriteBatchOptions)
-	//for i := 0; i < 7000; i++ {
-	//	wb.Put(utils.GetTestKey(i), utils.RandomValue(40960))
-	//}
-	//
-	//err = wb.Commit()
-	//t.Log(err)
 
 	keys := db.ListKeys()
 	t.Log(len(keys))

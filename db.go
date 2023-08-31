@@ -303,6 +303,13 @@ func (db *DB) Get(key []byte) ([]byte, error) {
 	return db.getValueByPosition(logRecordPos)
 }
 
+func (db *DB) Backup(dir string) error {
+	db.mu.RLock()
+	defer db.mu.RUnlock()
+
+	return utils.CopyDir(db.options.DirPath, dir, []string{fileLockName})
+}
+
 // ListKeys 获取数据库中所有的 key
 func (db *DB) ListKeys() [][]byte {
 	iterator := db.index.Iterator(false)
