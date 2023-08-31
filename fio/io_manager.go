@@ -5,8 +5,8 @@ const DataFilePerm = 0644
 type FileIOType = byte
 
 const (
-	// StandardFile 标准文件 IO
-	StandardFile FileIOType = iota
+	// StandardFIO 标准文件 IO
+	StandardFIO FileIOType = iota
 
 	// MemoryMap 文件内存映射
 	MemoryMap
@@ -33,7 +33,7 @@ type IOManager interface {
 // NewIOManager 初始化 IOManager, 目前只支持标准 FileIO
 func NewIOManager(fileName string, ioType FileIOType) (IOManager, error) {
 	switch ioType {
-	case StandardFile:
+	case StandardFIO:
 		return NewFileIOManager(fileName)
 	case MemoryMap:
 		return NewMMapIOManager(fileName)

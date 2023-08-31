@@ -10,7 +10,7 @@ type Options struct {
 	DataFileSize int64
 
 	// 累计写入多少字节后进行持久化
-	BytesPerSync int
+	BytesPerSync uint
 
 	// 每次写数据是否持久化
 	SyncWrites bool
@@ -20,6 +20,9 @@ type Options struct {
 
 	// 是否需要在启动时, 使用 mmap 加载
 	MMapAtStartup bool
+
+	// 数据文件合并的阈值
+	DataFileMergeRatio float32
 }
 
 // IteratorOptions 索引迭代器配置项
@@ -53,12 +56,13 @@ const (
 )
 
 var DefaultOptions = Options{
-	DirPath:       os.TempDir(),
-	DataFileSize:  256 * 1024 * 1024, // 256MB
-	SyncWrites:    false,
-	BytesPerSync:  0,
-	IndexType:     ART,
-	MMapAtStartup: true,
+	DirPath:            os.TempDir(),
+	DataFileSize:       256 * 1024 * 1024, // 256MB
+	SyncWrites:         false,
+	BytesPerSync:       0,
+	IndexType:          ART,
+	MMapAtStartup:      true,
+	DataFileMergeRatio: 0.5,
 }
 
 var DefaultIteratorOptions = IteratorOptions{

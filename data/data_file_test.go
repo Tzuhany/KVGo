@@ -8,21 +8,21 @@ import (
 )
 
 func TestOpenDataFile(t *testing.T) {
-	dataFile1, err := OpenDataFile(os.TempDir(), 0, fio.StandardFile)
+	dataFile1, err := OpenDataFile(os.TempDir(), 0, fio.StandardFIO)
 	assert.Nil(t, err)
 	assert.NotNil(t, dataFile1)
 
-	dataFile2, err := OpenDataFile(os.TempDir(), 111, fio.StandardFile)
+	dataFile2, err := OpenDataFile(os.TempDir(), 111, fio.StandardFIO)
 	assert.Nil(t, err)
 	assert.NotNil(t, dataFile2)
 
-	dataFile3, err := OpenDataFile(os.TempDir(), 111, fio.StandardFile)
+	dataFile3, err := OpenDataFile(os.TempDir(), 111, fio.StandardFIO)
 	assert.Nil(t, err)
 	assert.NotNil(t, dataFile3)
 }
 
 func TestDataFile_Write(t *testing.T) {
-	dataFile, err := OpenDataFile(os.TempDir(), 0, fio.StandardFile)
+	dataFile, err := OpenDataFile(os.TempDir(), 0, fio.StandardFIO)
 	assert.Nil(t, err)
 	assert.NotNil(t, dataFile)
 
@@ -37,7 +37,7 @@ func TestDataFile_Write(t *testing.T) {
 }
 
 func TestDataFile_Close(t *testing.T) {
-	dataFile, err := OpenDataFile(os.TempDir(), 123, fio.StandardFile)
+	dataFile, err := OpenDataFile(os.TempDir(), 123, fio.StandardFIO)
 	assert.Nil(t, err)
 	assert.NotNil(t, dataFile)
 
@@ -49,7 +49,7 @@ func TestDataFile_Close(t *testing.T) {
 }
 
 func TestDataFile_Sync(t *testing.T) {
-	dataFile, err := OpenDataFile(os.TempDir(), 456, fio.StandardFile)
+	dataFile, err := OpenDataFile(os.TempDir(), 456, fio.StandardFIO)
 	assert.Nil(t, err)
 	assert.NotNil(t, dataFile)
 
@@ -61,7 +61,7 @@ func TestDataFile_Sync(t *testing.T) {
 }
 
 func TestDataFile_ReadLogRecord(t *testing.T) {
-	dataFile, err := OpenDataFile(os.TempDir(), 6666, fio.StandardFile)
+	dataFile, err := OpenDataFile(os.TempDir(), 6666, fio.StandardFIO)
 	assert.Nil(t, err)
 	assert.NotNil(t, dataFile)
 
