@@ -7,7 +7,7 @@ import (
 )
 
 func TestDirSize(t *testing.T) {
-	size, err := DirSize(filepath.Join("/tmp/bitcask-go-stat"))
+	size, err := DirSize(filepath.Join("/tmp/kvgo-stat"))
 	t.Log(size)
 	t.Log(err)
 
